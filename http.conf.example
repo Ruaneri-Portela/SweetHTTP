@@ -1,0 +1,12 @@
+[HTTP]
+Ports=[int<list>] >> 8080,9090
+Hosts=[str<list>] >> 192.168.0.1,::1
+Root=[str] >> c:\srvRoot
+DefaultPages=[str<list>] >> index.html,default.html
+LogFile=[str] >> c:\http.log
+PartialMaxFileBlock=[str] >> 10Kb
+AllowDirList=[bool] >> true
+MaxConnections=[int] >> -1
+
+[MIME]
+extension=mine/mime
