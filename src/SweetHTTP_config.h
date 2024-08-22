@@ -17,6 +17,7 @@ struct HTTP_server_config
 	FILE* logFile;
 	FILE* configFile;
 	uint32_t partialMaxFileBlock;
+	int64_t maxClientConnections;
 	bool allowDirectoryListing;
 };
 

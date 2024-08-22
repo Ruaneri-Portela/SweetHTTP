@@ -189,6 +189,10 @@ struct HTTP_server_config HTTP_loadConfig(wchar_t* confFile)
 		{
 			configs.allowDirectoryListing = (wcscmp(value, L"true") == 0);
 		}
+		else if (wcscmp(key, L"MaxConnections") == 0)
+		{
+			configs.maxClientConnections = _wtoi(value);
+		}
 		free(line);
 	}
 	if (configs.partialMaxFileBlock > (10 * 1024 * 1024))
