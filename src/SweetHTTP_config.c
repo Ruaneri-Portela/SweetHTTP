@@ -55,11 +55,11 @@ static wchar_t *HTTP_splitComma(wchar_t *line, wchar_t **saveptr)
     return wcstok(line, L",", saveptr);
 }
 
-struct HTTP_server_config HTTP_loadConfig()
+struct HTTP_server_config HTTP_loadConfig(wchar_t *confFile)
 {
     struct HTTP_server_config configs;
     memset(&configs, 0, sizeof(struct HTTP_server_config));
-    configs.configFile = _wfopen(L"http.conf", L"r");
+    configs.configFile = _wfopen(confFile, L"r");
     if (configs.configFile == NULL)
     {
         perror("Failed to open config file");

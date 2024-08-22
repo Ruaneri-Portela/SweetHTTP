@@ -7,6 +7,7 @@
 
 // Variável global para indicar quando o servidor deve ser fechado
 static int g_closing = 0;
+wchar_t *configFile = L"config.json";
 
 void HTTP_processClientRequest(char *data, uint64_t size, struct SweetSocket_global_context *ctx, struct SweetSocket_peer_clients *thisClient, void *parms);
 
@@ -72,11 +73,88 @@ static enum HTTP_linked_list_actions HTTP_hosts(struct HTTP_object *actual, void
     return ARRAY_CONTINUE;
 }
 
-int main()
+static void HTTP_deamonize()
 {
+    wchar_t *commandLine = GetCommandLineW();
+    for (wchar_t *p = commandLine; *p; p++)
+    {
+        if (*p == L'-' && *(p + 1) == L'd')
+        {
+            *(p + 1) = L'#';
+            break;
+        }
+    }
+    STARTUPINFOW si = {0};
+    PROCESS_INFORMATION pi = {0};
+    // Cria o processo
+    if (!CreateProcessW(
+            NULL,             // Módulo a ser executado
+            commandLine,      // Linha de comando
+            NULL,             // Atributos de segurança do processo
+            NULL,             // Atributos de segurança da thread
+            FALSE,            // Herança de handles
+            DETACHED_PROCESS, // Flag para criar um processo detached
+            NULL,             // Bloco de ambiente
+            NULL,             // Diretório de trabalho
+            &si,              // Informações de inicialização
+            &pi               // Informações do processo
+            ))
+    {
+        fprintf(stderr, "Failed to create process: %lu\n", GetLastError());
+        exit(EXIT_FAILURE);
+    }
+
+    // Fechar handles do processo e thread do processo filho
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+
+    // Terminar o processo pai
+    exit(EXIT_SUCCESS);
+}
+
+static void HTTP_arguments(int argc, char *argv[])
+{
+    for (int i = 1; i < argc; i++)
+    {
+        int len = strlen(argv[i]);
+        if (len == 2)
+        {
+            switch (argv[i][1])
+            {
+            case 'c':
+                if (i + 1 < argc)
+                {
+                    configFile = (wchar_t *)malloc(strlen((argv[i + 1]) + 1) * sizeof(wchar_t));
+                    if (!configFile)
+                    {
+                        perror("Failed to allocate memory for config file");
+                        exit(1);
+                    }
+                    mbstowcs(configFile, argv[i + 1], strlen(argv[i + 1]) + 1);
+                    i++;
+                }
+                break;
+            case 'd':
+                HTTP_deamonize();
+                break;
+            default:
+                break;
+            }
+            continue;
+        }
+        printf("Invalid usage\n");
+        exit(1);
+    }
+}
+
+int main(int argc, char *argv[])
+{
+    // Verificação de argumentos
+    if (argc > 1)
+        HTTP_arguments(argc, argv);
     // Inicialização do ambiente do servidor
     struct HTTP_server_envolvirment envolviment = {0};
-    envolviment.server = HTTP_loadConfig();
+    envolviment.server = HTTP_loadConfig(configFile);
     envolviment.context = SweetSocket_initGlobalContext(PEER_SERVER);
     envolviment.context->useHeader = false;
 

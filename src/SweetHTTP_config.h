@@ -33,7 +33,7 @@ struct HTTP_server_mine_type
 	wchar_t *mineType;
 };
 
-struct HTTP_server_config HTTP_loadConfig();
+struct HTTP_server_config HTTP_loadConfig(wchar_t *configFile);
 
 void HTTP_freeConfig(struct HTTP_server_config *config);
 
