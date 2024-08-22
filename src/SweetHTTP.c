@@ -172,8 +172,7 @@ int main(int argc, char *argv[])
     // Inicialização do ambiente do servidor
     struct HTTP_server_envolvirment envolviment = {0};
     envolviment.server = HTTP_loadConfig(configFile);
-    envolviment.context = SweetSocket_initGlobalContext(PEER_SERVER);
-    envolviment.context->useHeader = false;
+    envolviment.context = SweetSocket_initGlobalContext(PEER_SERVER, false);
 
     // Carregamento de MIME types e plugins
     HTTP_loadMimeTypes(&envolviment);
