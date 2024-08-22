@@ -62,7 +62,7 @@ No Windows, pode-se usar o Visual Studio usando os SLN inclusos ou o MSYS2 como 
 - Primeiro, deve-se clonar esse repositório e seu subrepositório
 
 ```sh
-git clone --recurse-submodules https://github.com/Ruaneri-Portela/SweetSocket.git
+git clone --recurse-submodules https://github.com/Ruaneri-Portela/SweetHTTP.git
 cd SweetHTTP
 ```
 
