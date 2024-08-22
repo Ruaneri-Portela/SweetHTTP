@@ -59,5 +59,8 @@
     <ClInclude Include="src\SweetHTTP_file.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
+    <ClInclude Include="src\SweetHTTP_version.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

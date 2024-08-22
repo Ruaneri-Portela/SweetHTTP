@@ -150,7 +150,7 @@ static void HTTP_arguments(int argc, char* argv[])
 					"by default server try to load http.conf and save log as http.log\n");
 				exit(0);
 			case 'v':
-				printf("SweetHTTP version %s\n", "NULL");
+				printf("SweetHTTP version %s\n", SWEETHTTP_VERSION_HASH" "SWEETHTTP_VERSION_TAG);
 				exit(0);
 			default:
 				break;

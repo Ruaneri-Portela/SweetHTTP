@@ -26,7 +26,10 @@ endif
 TARGET = $(out_dir)/SweetHTTP$(exec)
 
 # Alvo principal
-all: $(TARGET)
+all: genVersion $(TARGET)
+
+genVersion: utils/genVersion.sh
+	./$<
 
 # Criação do diretório de saída
 $(out_dir):
