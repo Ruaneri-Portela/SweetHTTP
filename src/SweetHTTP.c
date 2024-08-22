@@ -6,15 +6,15 @@
 #include <string.h>
 
 // Variável global para indicar quando o servidor deve ser fechado
-static int g_closing = 0;
-wchar_t *configFile = L"config.json";
+static bool g_closing = 0;
+wchar_t *configFile = L"http.conf";
 
 void HTTP_processClientRequest(char *data, uint64_t size, struct SweetSocket_global_context *ctx, struct SweetSocket_peer_clients *thisClient, void *parms);
 
 static void HTTP_handleSigint(int sig)
 {
     (void)sig;
-    g_closing = 1;
+    g_closing = true;
 }
 
 struct HTTP_upper_server_hosts
@@ -114,6 +114,7 @@ static void HTTP_deamonize()
 
 static void HTTP_arguments(int argc, char *argv[])
 {
+    bool daemonize = false;
     for (int i = 1; i < argc; i++)
     {
         int len = strlen(argv[i]);
@@ -135,8 +136,22 @@ static void HTTP_arguments(int argc, char *argv[])
                 }
                 break;
             case 'd':
-                HTTP_deamonize();
+                daemonize = true;
                 break;
+            case 'h':
+                printf(
+                    "SweetHTTP - A sweet HTTP server\n"
+                    "Usage: SweetHTTP [options]\n"
+                    "Options:\n"
+                    "-c <config file>   Set the configuration file\n"
+                    "-d                 Daemonize the server\n"
+                    "-h                 Display this help message\n"
+                    "-v                 Display the version of the server\n\n"
+                    "by default server try to load http.conf and save log as http.log\n");
+                exit(0);
+            case 'v':
+                printf("SweetHTTP version %s\n", "NULL");
+                exit(0);
             default:
                 break;
             }
@@ -145,6 +160,8 @@ static void HTTP_arguments(int argc, char *argv[])
         printf("Invalid usage\n");
         exit(1);
     }
+    if (daemonize)
+        HTTP_deamonize();
 }
 
 int main(int argc, char *argv[])
