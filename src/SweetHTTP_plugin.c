@@ -1,10 +1,8 @@
-#include "SweetHTTP_config.h"
 #include "SweetHTTP_plugin.h"
-#include <stdbool.h>
-#include <stdint.h>
+#include "SweetHTTP_config.h"
 #include <windows.h>
 
-const struct HTTP_plugin_metadata *HTTP_loadPlugin(const wchar_t *pluginPath)
+const struct HTTP_plugin_metadata* HTTP_loadPlugin(const wchar_t* pluginPath)
 {
 	// Carregar a DLL do plugin
 	HMODULE hDLL = LoadLibraryW(pluginPath);
@@ -24,16 +22,16 @@ const struct HTTP_plugin_metadata *HTTP_loadPlugin(const wchar_t *pluginPath)
 	}
 
 	// Converter para ponteiro de função
-	struct HTTP_plugin_metadata *(*getManifest)(void);
-	*(FARPROC *)&getManifest = procAddress;
+	struct HTTP_plugin_metadata* (*getManifest)(void);
+	*(FARPROC*)&getManifest = procAddress;
 
 	// Retornar o manifest do plugin
-	const struct HTTP_plugin_metadata *manifest = getManifest();
+	const struct HTTP_plugin_metadata* manifest = getManifest();
 	manifest->setModule(hDLL);
 	return manifest;
 }
 
-void HTTP_pluginUnload(const struct HTTP_plugin_metadata *plugin)
+void HTTP_pluginUnload(const struct HTTP_plugin_metadata* plugin)
 {
 	if (plugin->shutdownPoint != NULL)
 	{
