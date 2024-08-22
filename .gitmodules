@@ -1,0 +1,3 @@
+[submodule "SweetSocket"]
+	path = SweetSocket
+	url = git@github.com:Ruaneri-Portela/SweetSocket.git
