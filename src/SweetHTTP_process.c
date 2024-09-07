@@ -17,7 +17,7 @@ static bool HTTP_transferData(struct HTTP_request *request, struct SweetSocket_g
 	if (hFile == HTTP_FILE_INVALID)
 	{
 		HTTP_sendErrorResponse(404, L"<h1>404 Not Found</h1><p>File not found.</p>", context, thisClient->id);
-		goto HTTP_transferDataExit;
+		goto HTTP_transferDataExitNoFree;
 	}
 
 	// Obter o tamanho do arquivo
@@ -26,7 +26,7 @@ static bool HTTP_transferData(struct HTTP_request *request, struct SweetSocket_g
 	{
 		HTTP_fileClose(hFile);
 		HTTP_sendErrorResponse(500, L"<h1>500 Internal Server Error</h1><p>Cannot get file size.</p>", context, thisClient->id);
-		goto HTTP_transferDataExit;
+		goto HTTP_transferDataExitNoFree;
 	}
 
 	// Verificar se é um intervalo de bytes (parcial)
@@ -38,7 +38,7 @@ static bool HTTP_transferData(struct HTTP_request *request, struct SweetSocket_g
 		{
 			HTTP_fileClose(hFile);
 			HTTP_sendErrorResponse(500, L"<h1>500 Internal Server Error</h1><p>Cannot allocate memory for headers.</p>", context, thisClient->id);
-			goto HTTP_transferDataExit;
+			goto HTTP_transferDataExitNoFree;
 		}
 
 		request->endRange = (request->endRange == -1) ? fileSize - 1 : request->endRange;
@@ -51,7 +51,7 @@ static bool HTTP_transferData(struct HTTP_request *request, struct SweetSocket_g
 		{
 			HTTP_fileClose(hFile);
 			HTTP_sendErrorResponse(500, L"<h1>500 Internal Server Error</h1><p>Cannot seek file.</p>", context, thisClient->id);
-			goto HTTP_transferDataExit;
+			goto HTTP_transferDataExitNoFree;
 		}
 	}
 
@@ -70,7 +70,7 @@ static bool HTTP_transferData(struct HTTP_request *request, struct SweetSocket_g
 	{
 		CloseHandle(hFile);
 		HTTP_sendErrorResponse(500, L"<h1>500 Internal Server Error</h1><p>Cannot allocate memory for file data.</p>", context, thisClient->id);
-		goto HTTP_transferDataExit;
+		goto HTTP_transferDataExitNoFree;
 	}
 
 	for (int64_t totalSent = 0; totalSent < fileSize;)
@@ -93,8 +93,9 @@ static bool HTTP_transferData(struct HTTP_request *request, struct SweetSocket_g
 		break; // Se não conseguiu ler, sair do loop
 	}
 HTTP_transferDataExit:
-	HTTP_fileClose(hFile);
 	free(fileData);
+HTTP_transferDataExitNoFree:
+	HTTP_fileClose(hFile);
 	return status;
 }
 
