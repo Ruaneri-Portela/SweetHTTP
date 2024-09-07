@@ -159,12 +159,6 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="plugins\SweetHTTP_plugin_cpp\SweetHTTP_plugin_cpp.vcxproj">
-      <Project>{caaa880f-ae6c-4713-8004-8b810bf15381}</Project>
-    </ProjectReference>
-    <ProjectReference Include="plugins\SweetHTTP_plugin_java\SweetHTTP_plugin_java.vcxproj">
-      <Project>{ec4e516a-cee5-48e5-bb77-6625ea5a75f8}</Project>
-    </ProjectReference>
     <ProjectReference Include="SweetSocket\SweetSocket.vcxproj">
       <Project>{4bb7a961-ee1e-44cb-9f6c-b3446f73182f}</Project>
     </ProjectReference>

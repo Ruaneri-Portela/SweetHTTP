@@ -9,7 +9,7 @@
 static bool g_closing = 0;
 wchar_t* configFile = L"http.conf";
 
-void HTTP_processClientRequest(char* data, uint64_t size, struct SweetSocket_global_context* ctx, struct SweetSocket_peer_clients* thisClient, void* parms);
+enum SweetSocket_sweet_callback_status HTTP_processClientRequest(char* data, uint64_t size, struct SweetSocket_global_context* ctx, struct SweetSocket_peer_clients* thisClient, void* parms);
 
 static void HTTP_handleSigint(int sig)
 {
