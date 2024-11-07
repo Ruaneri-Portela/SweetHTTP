@@ -7,5 +7,6 @@
 #include "SweetHTTP_process.h"
 #include "SweetHTTP_utils.h"
 #include "SweetHTTP_version.h"
+#include "SweetHTTP_console.h"
 #include <windows.h>
 #endif

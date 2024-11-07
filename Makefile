@@ -12,8 +12,8 @@ obj = $(addprefix $(out_dir)/, $(notdir $(src:.c=.o)))
 
 lib = SweetSocket
 sweet_socket_dir = $(lib)
-sweet_socket_build = $(sweet_socket_dir)/build
-sweet_socket_src = $(sweet_socket_dir)/src
+sweet_socket_build = ../$(sweet_socket_dir)/build
+sweet_socket_src = ../$(sweet_socket_dir)/src
 
 ifeq ($(OS),Windows_NT)
     exec = .exe

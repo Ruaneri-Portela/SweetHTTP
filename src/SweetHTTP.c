@@ -7,9 +7,9 @@
 
 // Variável global para indicar quando o servidor deve ser fechado
 static volatile bool g_closing = 0;
-wchar_t* configFile = L"http.conf";
+wchar_t *configFile = L"http.conf";
 
-enum SweetSocket_sweet_callback_status HTTP_processClientRequest(char* data, uint64_t size, struct SweetSocket_global_context* ctx, struct SweetSocket_peer_clients* thisClient, void* parms);
+enum SweetSocket_sweet_callback_status HTTP_processClientRequest(char *data, uint64_t size, struct SweetSocket_global_context *ctx, struct SweetSocket_peer_clients *thisClient, void *parms);
 
 static void HTTP_handleSigint(int sig)
 {
@@ -19,27 +19,27 @@ static void HTTP_handleSigint(int sig)
 
 struct HTTP_upper_server_hosts
 {
-	struct SweetSocket_global_context* context;
-	struct HTTP_server_config* server;
+	struct SweetSocket_global_context *context;
+	struct HTTP_server_config *server;
 };
 
 struct HTTP_upper_server_ports
 {
-	struct HTTP_upper_server_hosts* up;
-	wchar_t* host;
+	struct HTTP_upper_server_hosts *up;
+	wchar_t *host;
 };
 
-static enum HTTP_linked_list_actions HTTP_ports(struct HTTP_object* actual, void* parms, uint64_t count)
+static enum HTTP_linked_list_actions HTTP_ports(struct HTTP_object *actual, void *parms, uint64_t count)
 {
 	(void)count;
-	struct HTTP_upper_server_ports* up = (struct HTTP_upper_server_ports*)parms;
-	struct SweetSocket_global_context* context = up->up->context;
-	uint16_t* port = (uint16_t*)actual->object;
+	struct HTTP_upper_server_ports *up = (struct HTTP_upper_server_ports *)parms;
+	struct SweetSocket_global_context *context = up->up->context;
+	uint16_t *port = (uint16_t *)actual->object;
 	uint8_t type = 0;
 
 	// Converter o endereço do host de wide string para string
 	size_t len = wcslen(up->host) + 1;
-	char* host = (char*)malloc(len);
+	char *host = (char *)malloc(len);
 	if (!host)
 	{
 		perror("Failed to allocate memory for host");
@@ -63,11 +63,11 @@ static enum HTTP_linked_list_actions HTTP_ports(struct HTTP_object* actual, void
 	return ARRAY_CONTINUE;
 }
 
-static enum HTTP_linked_list_actions HTTP_hosts(struct HTTP_object* actual, void* parms, uint64_t count)
+static enum HTTP_linked_list_actions HTTP_hosts(struct HTTP_object *actual, void *parms, uint64_t count)
 {
 	(void)count;
-	struct HTTP_upper_server_hosts* up = (struct HTTP_upper_server_hosts*)parms;
-	struct HTTP_upper_server_ports upPort = { up, (wchar_t*)actual->object };
+	struct HTTP_upper_server_hosts *up = (struct HTTP_upper_server_hosts *)parms;
+	struct HTTP_upper_server_ports upPort = {up, (wchar_t *)actual->object};
 
 	HTTP_arrayForEach(&up->server->ports, HTTP_ports, &upPort);
 	return ARRAY_CONTINUE;
@@ -75,8 +75,8 @@ static enum HTTP_linked_list_actions HTTP_hosts(struct HTTP_object* actual, void
 
 static void HTTP_deamonize()
 {
-	wchar_t* commandLine = GetCommandLineW();
-	for (wchar_t* p = commandLine; *p; p++)
+	wchar_t *commandLine = GetCommandLineW();
+	for (wchar_t *p = commandLine; *p; p++)
 	{
 		if (*p == L'-' && *(p + 1) == L'd')
 		{
@@ -84,21 +84,21 @@ static void HTTP_deamonize()
 			break;
 		}
 	}
-	STARTUPINFOW si = { 0 };
-	PROCESS_INFORMATION pi = { 0 };
+	STARTUPINFOW si = {0};
+	PROCESS_INFORMATION pi = {0};
 	// Cria o processo
 	if (!CreateProcessW(
-		NULL,             // Módulo a ser executado
-		commandLine,      // Linha de comando
-		NULL,             // Atributos de segurança do processo
-		NULL,             // Atributos de segurança da thread
-		FALSE,            // Herança de handles
-		DETACHED_PROCESS, // Flag para criar um processo detached
-		NULL,             // Bloco de ambiente
-		NULL,             // Diretório de trabalho
-		&si,              // Informações de inicialização
-		&pi               // Informações do processo
-	))
+			NULL,			  // Módulo a ser executado
+			commandLine,	  // Linha de comando
+			NULL,			  // Atributos de segurança do processo
+			NULL,			  // Atributos de segurança da thread
+			FALSE,			  // Herança de handles
+			DETACHED_PROCESS, // Flag para criar um processo detached
+			NULL,			  // Bloco de ambiente
+			NULL,			  // Diretório de trabalho
+			&si,			  // Informações de inicialização
+			&pi				  // Informações do processo
+			))
 	{
 		fprintf(stderr, "Failed to create process: %lu\n", GetLastError());
 		exit(EXIT_FAILURE);
@@ -112,12 +112,12 @@ static void HTTP_deamonize()
 	exit(EXIT_SUCCESS);
 }
 
-static void HTTP_arguments(int argc, char* argv[])
+static void HTTP_arguments(int argc, char *argv[])
 {
 	bool daemonize = false;
 	for (int i = 1; i < argc; i++)
 	{
-		int len = strlen(argv[i]);
+		size_t len = strlen(argv[i]);
 		if (len == 2)
 		{
 			switch (argv[i][1])
@@ -125,7 +125,7 @@ static void HTTP_arguments(int argc, char* argv[])
 			case 'c':
 				if (i + 1 < argc)
 				{
-					configFile = (wchar_t*)malloc(strlen((argv[i + 1]) + 1) * sizeof(wchar_t));
+					configFile = (wchar_t *)malloc(strlen((argv[i + 1]) + 1) * sizeof(wchar_t));
 					if (!configFile)
 					{
 						perror("Failed to allocate memory for config file");
@@ -150,7 +150,7 @@ static void HTTP_arguments(int argc, char* argv[])
 					"by default server try to load http.conf and save log as http.log\n");
 				exit(0);
 			case 'v':
-				printf("SweetHTTP version %s\n", SWEETHTTP_VERSION_HASH" "SWEETHTTP_VERSION_TAG);
+				printf("SweetHTTP version %s\n", SWEETHTTP_VERSION_HASH " " SWEETHTTP_VERSION_TAG);
 				exit(0);
 			default:
 				break;
@@ -164,13 +164,13 @@ static void HTTP_arguments(int argc, char* argv[])
 		HTTP_deamonize();
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
 	// Verificação de argumentos
 	if (argc > 1)
 		HTTP_arguments(argc, argv);
 	// Inicialização do ambiente do servidor
-	struct HTTP_server_envolvirment envolviment = { 0 };
+	struct HTTP_server_envolvirment envolviment = {0};
 	envolviment.server = HTTP_loadConfig(configFile);
 	envolviment.context = SweetSocket_initGlobalContext(PEER_SERVER, false, envolviment.server.maxClientConnections);
 
@@ -179,7 +179,7 @@ int main(int argc, char* argv[])
 	HTTP_loadPlugins(&envolviment);
 
 	// Configuração de hosts e portas
-	struct HTTP_upper_server_hosts up = { envolviment.context, &envolviment.server };
+	struct HTTP_upper_server_hosts up = {envolviment.context, &envolviment.server};
 	HTTP_arrayForEach(&envolviment.server.hosts, HTTP_hosts, &up);
 
 	// Início do servidor
@@ -193,96 +193,10 @@ int main(int argc, char* argv[])
 	// Aceitação de conexões e processamento de requisições
 	SweetSocket_serverStartAccepting(envolviment.context, APPLY_ALL, NULL, &HTTP_processClientRequest, &envolviment, NULL, ONLY_RECIVE);
 	signal(SIGINT, HTTP_handleSigint);
-	wprintf(L"Press Ctrl+C to stop or type exit\n");
 
-	//
-	int bufferSize = 512;
-	char* consoleBuffer = calloc(1, bufferSize);
-	if (consoleBuffer == NULL)
-	{
-		perror("Erro ao alocar memória");
-		return 1;
-	}
 	// Loop principal do servidor
-	printf("_> ");
-	while (!g_closing)
-	{
-		SweetThread_sleep(100); // Pausa por 0.1 segundo
-		// Ler a entrada padrão
-		int rollUp = 1;
-		fgets(consoleBuffer, bufferSize, stdin);
-		while (true) {
-			int end = (bufferSize * rollUp) - 2;  // Posição para verificar se o buffer está cheio
-			if (consoleBuffer[end] != '\0' && consoleBuffer[end] != '\n') {
-				char* tempBuffer = realloc(consoleBuffer, bufferSize * ++rollUp);
-				if (tempBuffer == NULL) {
-					perror("Erro ao realocar memória");
-					free(consoleBuffer);
-					return 1;  // Sai do loop e encerra o programa
-				}
-				consoleBuffer = tempBuffer;
-				// Continua a leitura a partir do final do buffer existente
-				fgets(consoleBuffer + (bufferSize * (rollUp - 1)), bufferSize, stdin);
-				continue;
-			}
-			break;
-		}
 
-		// Processa o conteúdo do buffer
-		if (consoleBuffer[0] != '\0') {
-			// Console
-			if (strcmp("exit\n", consoleBuffer) == 0)
-			{
-				g_closing = 1;
-				break;
-			}
-			else if (strcmp("list connections\n", consoleBuffer) == 0) {
-				printf("Connections : [%d]\n", envolviment.context->connectionsAlive);
-				for (struct SweetSocket_peer_clients* actual = envolviment.context->clients; actual != NULL; actual = actual->next) {
-					SweetSocket_resolvePeer(actual);
-					printf("[%ld] -> ADDR = %s ,PORT = %d\n", actual->id, actual->client->addr, actual->client->port);
-				}	
-			}
-			else if (strcmp("list servers\n", consoleBuffer) == 0) {
-				printf("Servers : [%d]\n", envolviment.context->connections.size);
-				for (struct SweetSocket_peer_connects* actual = envolviment.context->connections.base; actual != NULL; actual = actual->next) {
-					printf("[%ld] -> ADDR = %s ,PORT = %d, TYPE = %s\n", actual->id, actual->socket.addr, actual->socket.port, actual->socket.type == AF_INET ? "IPv4" : actual->socket.type == AF_INET6 ? "IPv6" : "UNKNOW");
-				}
-			}
-			else if (strcmp("show config\n", consoleBuffer) == 0) {
-				printf("Root: '%ls'\n"
-					"Allow Listing Directory: %d\n"
-					"Max block send: %d\n"
-					"Max connections: %d\n",
-					envolviment.server.root,
-					envolviment.server.allowDirectoryListing,
-					envolviment.server.partialMaxFileBlock,
-					envolviment.server.maxClientConnections);
-			}
-			else if (strcmp("help\n", consoleBuffer) == 0) {
-				printf("Help\n'list connections'\tSee clients table\n'list servers'\t\tSee servers table\n'show config'\t\tShowing settings uses now\n'exit'\t\t\tClose server\n");
-			}
-			else if (strcmp("version\n", consoleBuffer) == 0) {
-				printf("Version Number: "SWEETHTTP_VERSION_H"\nGit upstream: "SWEETHTTP_VERSION_HASH"_"SWEETHTTP_VERSION_TAG"\n");
-			}
-			else {
-				printf("Comand unknow, use help to viewer comands\n");
-			}
-			printf("_> ");
-			// Limpeza e reset do buffer
-			if (rollUp > 1) {
-				free(consoleBuffer);
-				consoleBuffer = calloc(bufferSize, sizeof(char));
-				if (consoleBuffer == NULL) {
-					perror("Erro ao alocar memória");
-					return 1;  // Sai do loop e encerra o programa
-				}
-			}
-			else {
-				memset(consoleBuffer, 0, bufferSize);
-			}
-		}
-	}
+	SweetHTTP_console(&g_closing, &envolviment);
 
 	// Fechamento do servidor
 	SweetSocket_closeGlobalContext(&envolviment.context);
